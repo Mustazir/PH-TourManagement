@@ -2,16 +2,18 @@ import { Server } from "http";
 
 import mongoose from "mongoose";
 import app from "./app";
+import dotenv from "dotenv";
+import { th } from "zod/v4/locales/index.cjs";
+dotenv.config();
 
 let server: Server;
 
 const startServer = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://todosexpress:todosexpress@cluster0.w81iv.mongodb.net/Ph-Tour-Management?retryWrites=true&w=majority&appName=Cluster0"
-    );
+    const uri = process.env.MONGODB_URI as string;
+    await mongoose.connect(uri);
     console.log("Connected to MongoDB");
-    server=app.listen(5000, () => {
+    server = app.listen(5000, () => {
       console.log("Server is running on port 5000");
     });
   } catch (error) {
@@ -20,17 +22,48 @@ const startServer = async () => {
 };
 startServer();
 
+process.on("unhandledRejection", () => {
+  console.log(
+    "unhandledRejection detected, shutting down the server gracefully........"
+  );
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+process.on("uncaughtException", () => {
+  console.log(
+    "unhandledRejection detected, shutting down the server gracefully........"
+  );
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+process.on("SIGTERM", () => {
+  console.log(
+    "SIGTERM signal recieved, shutting down the server gracefully........"
+  );
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
 
-process.on("unhandledRejection",()=>{
-    console.log("unhandledRejection detected, shutting down the server gracefully........");
-    if(server){
-        server.close(()=>{
-            process.exit(1);
-        })
-    }
 
-})
 
+// unhandled promise rejections
+// Promise.reject(new Error("I forgot to handle this promise rejection!"));
+
+// uncaught exception
+
+// throw new Error("I forgot to handle this exception!");
 
 /**
  *
