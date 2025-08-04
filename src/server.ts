@@ -1,9 +1,9 @@
+/* eslint-disable no-console */
 import { Server } from "http";
 
 import mongoose from "mongoose";
 import app from "./app";
 import dotenv from "dotenv";
-import { th } from "zod/v4/locales/index.cjs";
 dotenv.config();
 
 let server: Server;
