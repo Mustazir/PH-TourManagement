@@ -3,17 +3,18 @@ import { Server } from "http";
 
 import mongoose from "mongoose";
 import app from "./app";
-import dotenv from "dotenv";
-dotenv.config();
+import { envVars } from "./app/config/env";
+
+
 
 let server: Server;
 
 const startServer = async () => {
   try {
-    const uri = process.env.MONGODB_URI as string;
-    await mongoose.connect(uri);
+
+    await mongoose.connect(envVars.MONGODB_URI);
     console.log("Connected to MongoDB");
-    server = app.listen(5000, () => {
+    server = app.listen(envVars.PORT, () => {
       console.log("Server is running on port 5000");
     });
   } catch (error) {
