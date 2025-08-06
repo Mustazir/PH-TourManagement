@@ -1,6 +1,9 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { router } from "./app/routes";
+import { globalErrorHandler } from "./app/middleWires/globalErrorHandler";
+import notFound from "./app/middleWires/notFound";
+
 const app=express()
 
 app.use(express.json())
@@ -13,4 +16,9 @@ app.get("/",(req:Request,res:Response)=>{
         message: "Welcome to the Ph-Tour Management API"
     });
 })
+
+// error handling middlewares
+app.use(globalErrorHandler)
+
+app.use(notFound)
 export default app;
