@@ -3,6 +3,7 @@ import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus  from 'http-status-codes';
 import bcryptjs from 'bcryptjs';
+import jwt  from "jsonwebtoken";
 const credentialLogin = async (payload: Partial<IUser>) => {
   const { email, password } = payload;
   const isUserExist = await User.findOne({ email });
@@ -14,11 +15,20 @@ const credentialLogin = async (payload: Partial<IUser>) => {
 
   if(!isPasswordMatch){
     throw new AppError(httpStatus.UNAUTHORIZED, "Password does not match");
-
   }
 
+  const jswtPaload={
+    userId:isUserExist._id,
+    email:isUserExist.email,
+    role :isUserExist.role
+  }
+  const accessToken =jwt.sign(jswtPaload,"secrate",{
+    expiresIn:"1d"
+  })
+
+
   return {
-    email:isUserExist.email
+    accessToken
   }
 };
 
