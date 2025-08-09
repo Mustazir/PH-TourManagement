@@ -55,7 +55,7 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    auth:[autProviderSchema],
+    auths:[autProviderSchema],
 
 
 
