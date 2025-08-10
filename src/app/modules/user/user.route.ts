@@ -5,40 +5,38 @@ import { createUserZodSchema } from "./user.validate";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelper/AppError";
 import { Role } from "./user.interface";
+import { verifyToken } from "../../utils/jst";
+import { envVars } from "../../config/env";
 
 const router = Router();
 
-router.post(
-  "/register",
-  validateRequest(createUserZodSchema),
-  UserController.createUser
-);
-router.get(
-  "/all-users",
-  async (req: Request, res: Response, next: NextFunction) => {
+const checkAuth =
+  (...authRoles:string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       const accessToken = req.headers.authorization;
 
       if (!accessToken) {
         throw new AppError(403, "No token Recieved");
       }
-      const verifiedToken = jwt.verify(accessToken, "secrate");
-      console.log(verifiedToken);
+      const verifiedToken = verifyToken(accessToken, envVars.JWT_ACCESS_SECRET);
 
-      console.log(verifiedToken)
-    //   JWT Role
-      if (
-        (verifiedToken as JwtPayload).role !== Role.ADMIN ) {
+      console.log(verifiedToken);
+      //   JWT Role
+      if ((verifiedToken as JwtPayload).role !== Role.ADMIN) {
         throw new AppError(403, "You are not Permitted to this route");
       }
-      console.log(verifiedToken)
+      console.log(verifiedToken);
 
       next();
     } catch (error) {
       next(error);
     }
-  },
-  UserController.getAllUsers
+  };
+router.post(
+  "/register",
+  validateRequest(createUserZodSchema),
+  UserController.createUser
 );
+router.get("/all-users",checkAuth("ADMIN","SUPER_ADMIN"),UserController.getAllUsers);
 
 export const userRoutes = router;
