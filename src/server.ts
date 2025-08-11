@@ -4,14 +4,12 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
-
-
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 let server: Server;
 
 const startServer = async () => {
   try {
-
     await mongoose.connect(envVars.MONGODB_URI);
     console.log("Connected to MongoDB");
     server = app.listen(envVars.PORT, () => {
@@ -21,7 +19,11 @@ const startServer = async () => {
     console.error("Error connecting to MongoDB:", error);
   }
 };
-startServer();
+(async () => {
+
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 process.on("unhandledRejection", () => {
   console.log(
@@ -56,8 +58,6 @@ process.on("SIGTERM", () => {
   }
   process.exit(1);
 });
-
-
 
 // unhandled promise rejections
 // Promise.reject(new Error("I forgot to handle this promise rejection!"));
