@@ -14,7 +14,18 @@ const credentialLogin = catchAsync(async (req: Request, res: Response,next:NextF
       data: loginInfo,
     })
 })
+const getNewAccessToken = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
+  const refreshToken = req.headers.authorization
+    const tokenInfo = await AuthServices.getNewAccesToken(refreshToken as string);
+    sendResponse(res,{
+      statusCode:httpStatus.CREATED,
+      success:true,
+      message:"User LoogedIn successfully",
+      data: tokenInfo,
+    })
+})
 
 export const AuthControllers={
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
 }
