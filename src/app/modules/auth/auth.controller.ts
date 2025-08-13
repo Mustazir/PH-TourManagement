@@ -9,7 +9,7 @@ import { setAuthCookie } from "../../utils/setCookie";
 const credentialLogin = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
     const loginInfo =await AuthServices.credentialLogin(req.body)
 
-    // res.cookie("accesToken",loginInfo.accessToken,{
+    // res.cookie("accessToken",loginInfo.accessToken,{
     //   httpOnly:true,
     //   secure:false
     // })
@@ -30,16 +30,14 @@ const credentialLogin = catchAsync(async (req: Request, res: Response,next:NextF
 })
 const getNewAccessToken = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
   const refreshToken = req.cookies.refreshToken
-    const tokenInfo = await AuthServices.getNewAccesToken(refreshToken as string);
+    const tokenInfo = await AuthServices.getNewAccessToken(refreshToken as string);
 
-
-    // res.cookie("accesToken",tokenInfo.accessToken,{
+    // res.cookie("accessToken",tokenInfo.accessToken,{
     //   httpOnly:true,
     //   secure:false
     // })
 
     setAuthCookie(res, tokenInfo);
-
 
     sendResponse(res,{
       statusCode:httpStatus.CREATED,
@@ -49,7 +47,45 @@ const getNewAccessToken = catchAsync(async (req: Request, res: Response,next:Nex
     })
 })
 
+const logOut = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
+  res.clearCookie("accessToken",{
+    httpOnly:true,
+    secure:false,
+    sameSite:"lax"
+  })
+  res.clearCookie("refreshToken",{
+    httpOnly:true,
+    secure:false,
+    sameSite:"lax"
+  })
+
+    sendResponse(res,{
+      statusCode:httpStatus.CREATED,
+      success:true,
+      message:"User LogedOut successfully",
+      data: null,
+    })
+})
+
+
+const resetPassword = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
+
+  const newPassword=req.body.newPassword
+  const oldPassword=req.body.oldPassword
+  const decodeToken=req.user
+  await AuthServices.resetPassword(oldPassword,newPassword,decodeToken)
+
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Password Reset/Change successfully",
+      data: null,
+    });
+})
+
 export const AuthControllers={
     credentialLogin,
-    getNewAccessToken
+    getNewAccessToken,
+    logOut,
+    resetPassword
 }
