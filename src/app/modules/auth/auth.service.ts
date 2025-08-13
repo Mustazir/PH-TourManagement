@@ -13,23 +13,39 @@ const credentialLogin = async (payload: Partial<IUser>) => {
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "Email Does not Exist");
   }
-  const isPasswordMatch =await bcryptjs.compare(password as string, isUserExist.password as string);
+  const isPasswordMatch = await bcryptjs.compare(
+    password as string,
+    isUserExist.password as string
+  );
 
-  if(!isPasswordMatch){
+  if (!isPasswordMatch) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Password does not match");
   }
 
-  const jswtPaload={
-    userId:isUserExist._id,
-    email:isUserExist.email,
-    role :isUserExist.role
-  }
-  const accessToken =generateToken(jswtPaload,envVars.JWT_ACCESS_SECRET,envVars.JWT_ACCESS_EXPIRES)
+  const jswtPaload = {
+    userId: isUserExist._id,
+    email: isUserExist.email,
+    role: isUserExist.role,
+  };
+  const accessToken = generateToken(
+    jswtPaload,
+    envVars.JWT_ACCESS_SECRET,
+    envVars.JWT_ACCESS_EXPIRES
+  );
+  const refreshToken = generateToken(
+    jswtPaload,
+    envVars.JWT_REFRESH_SECRET,
+    envVars.JWT_REFRESH_EXPIRES
+  );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password: pass, ...rest } = isUserExist.toObject(); //here we destructure this for remove password from response for security
 
   return {
-    accessToken
-  }
+    accessToken,
+    refreshToken,
+    user: rest,
+  };
 };
 
 
