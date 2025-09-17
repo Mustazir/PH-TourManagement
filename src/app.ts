@@ -6,7 +6,7 @@ import notFound from "./app/middleWires/notFound";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import expresssession from "express-session";
-
+import "./app/config/passport"  // for passport configuration always need to use this
 
 const app=express()
 
