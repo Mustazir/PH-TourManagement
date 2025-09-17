@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
@@ -51,7 +52,7 @@ passport.use(
 )
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 passport.serializeUser((user: any, done: (err: any, id?: unknown) => void)=>{
   done(null,user._id);
 })

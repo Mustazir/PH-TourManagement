@@ -7,13 +7,14 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import expresssession from "express-session";
 import "./app/config/passport"  // for passport configuration always need to use this
+import { envVars } from "./app/config/env";
 
 const app=express()
 
 // middlewire for authentication google facebook/local here use passport js library
 
 app.use(expresssession({
-    secret:"secret",
+    secret:envVars.EXPRESS_SESSION,
     resave:false,
     saveUninitialized:false
 }))
