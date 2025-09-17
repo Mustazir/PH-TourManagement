@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env";
@@ -28,7 +29,7 @@ passport.use(
             user= await User.create({
                 email,
                 name:profile.displayName,
-                picture:profile.photos[0].value,
+                picture:profile.photos?.[0].value,
                 role:Role.USER,
                 isVerified:true,
                 auths:[{
@@ -36,9 +37,9 @@ passport.use(
                     providerId:profile.id
                 }]
             })
-
         }
-        return done(null,user);
+            return done(null,user);
+        }
         catch (error) {
             console.error("Error in Google Strategy:", error);
             return done(error );
@@ -47,4 +48,20 @@ passport.use(
 
     }
   )
-);
+)
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+passport.serializeUser((user: any, done: (err: any, id?: unknown) => void)=>{
+  done(null,user._id);
+})
+
+passport.deserializeUser(async(id:string,done:any)=>{
+  try {
+    const user = await User.findById(id);
+    done(null,user);
+  } catch (error) {
+    console.error("Error in deserializing user:", error);
+    done(error,null);
+  }
+})
