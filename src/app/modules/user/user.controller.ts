@@ -13,6 +13,7 @@ import { JwtPayload } from "jsonwebtoken";
 
 
 
+
 const createUser = catchAsync(async (req: Request, res: Response,next:NextFunction) =>{
   const user = await UserServices.createUser(req.body);
 
@@ -36,11 +37,11 @@ const updateUser = catchAsync(async (req: Request, res: Response,next:NextFuncti
   const userId=req.params.id
   // const token = req.headers.authorization
   // const verifiedToken= verifyToken(token as string,envVars.JWT_ACCESS_SECRET) as JwtPayload
-// ---- use here custom tpe 
+// ---- use here custom tpe
 
   const verifiedToken=req.user;
   const payload =req.body
-  const user = await UserServices.updateUser(userId,payload,verifiedToken);
+  const user = await UserServices.updateUser(userId,payload,verifiedToken as JwtPayload);
 
     // res.status(httpStatus.CREATED).json({
     //   message: "user created successfully",
