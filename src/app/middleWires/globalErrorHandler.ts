@@ -19,11 +19,26 @@ export const globalErrorHandler = (err:any,req: Request,res: Response,next: Next
         statusCode=400;
         message=`${matchedArray[1]} already exists`;
     }
-    // Cast error
+    // Cast error/ObjectId error
     else if(err.name==="CastError"){
         statusCode=400;
         message="invalid Mongoose ObjectId.Please provide a valid id";
     }
+    // Zod validation error
+    else if(err.name==="ZodError"){
+        statusCode=400;
+        message="ZOD Validation error";
+        err.issues.forEach((issue:any)=>{
+            errorSources.push({
+                path:issue.path[issue.path.length-1],
+                message:issue.message,
+            })
+        })
+    }
+
+
+
+    // Mongoose validation error
     else if(err.name==="ValidationError"){
         statusCode=400;
         const errors= Object.values(err.errors)
@@ -37,6 +52,7 @@ export const globalErrorHandler = (err:any,req: Request,res: Response,next: Next
     res.status(statusCode).json({
         success: false,
         message,
+        errorSources,
         err,
         stack:envVars.NODE_ENV === "development" ? err.stack : null,
     })
