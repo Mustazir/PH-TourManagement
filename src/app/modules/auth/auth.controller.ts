@@ -10,6 +10,41 @@ import { createUserTokens } from "./../../utils/userToken";
 import AppError from "../../errorHelper/AppError";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import passport from "passport";
+
+const credentialLogin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return next(new AppError(httpStatus.UNAUTHORIZED, info.message));
+      }
+
+      const userTokens = await createUserTokens(user);
+
+      const {password:pass , ...rest}=user.toObject()
+      setAuthCookie(res, userTokens);
+
+      sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+      
+        success: true,
+        message: "User LoogedIn successfully",
+        data: {
+          accessToken: userTokens.accessToken,
+          refreshToken: userTokens.refreshToken,
+          data:rest
+        },
+      });
+    })(req, res, next);
+  }
+);
+
+/*---------Use for credential login without passport js-----------------
+
 
 const credentialLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +69,8 @@ const credentialLogin = catchAsync(
     });
   }
 );
+ */
+
 const getNewAccessToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken;
@@ -101,11 +138,10 @@ const resetPassword = catchAsync(
 );
 const googleCallbackController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    let redirectTo = req.query.state ? (req.query.state as string) : "/";
 
-    let redirectTo =req.query.state ? req.query.state as string :"/"
-
-    if(redirectTo.startsWith("/")){
-      redirectTo=redirectTo.slice(1)
+    if (redirectTo.startsWith("/")) {
+      redirectTo = redirectTo.slice(1);
     }
     const user = req.user;
     console.log(user);
