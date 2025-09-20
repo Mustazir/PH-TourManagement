@@ -5,7 +5,7 @@ import { Role } from "../user/user.interface";
 import passport from "passport";
 
 
-const router =Router()
+const router = Router()
 
 router.post("/login",AuthControllers.credentialLogin)
 router.post("/refresh-token",AuthControllers.getNewAccessToken  )
@@ -20,3 +20,4 @@ router.get("/google/callback",passport.authenticate('google',{failureRedirect:"/
 
 
 export const AuthRoutes = router;
+

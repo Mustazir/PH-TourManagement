@@ -5,12 +5,14 @@ import httpStatus from "http-status-codes";
 import bcryptjs from "bcryptjs";
 import {
   createNewAccessTokenWithRefreshToken,
-  createUserTokens,
+
 } from "../../utils/userToken";
-import { IUser } from "../user/user.interface";
+// import { IUser } from "../user/user.interface";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 
+
+/* -----------now its not need because credential login handle by passport js-----------------
 const credentialLogin = async (payload: Partial<IUser>) => {
   const { email, password } = payload;
   const isUserExist = await User.findOne({ email });
@@ -55,6 +57,8 @@ const credentialLogin = async (payload: Partial<IUser>) => {
   };
 };
 
+*/
+
 const getNewAccessToken = async (refreshToken: string) => {
   const newAccessToken = await createNewAccessTokenWithRefreshToken(
     refreshToken
@@ -94,7 +98,7 @@ const resetPassword = async (
 };
 
 export const AuthServices = {
-  credentialLogin,
+  // credentialLogin,
   getNewAccessToken,
   resetPassword,
 };
