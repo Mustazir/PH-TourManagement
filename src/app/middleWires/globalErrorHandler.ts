@@ -19,6 +19,11 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+
+   if(envVars.NODE_ENV==="development"){
+      console.log(err);
+    }
+    
   let statusCode = 500;
   let message = ` ${err.message}`;
   let errorSources: TErrorSources[] = [];
