@@ -1,6 +1,7 @@
 import express from "express";
 import { checkAuth } from "../../middleWires/checkAuth";
 import { validateRequest } from "../../middleWires/validateRequest";
+import { Role } from "../user/user.interface";
 
 
 
